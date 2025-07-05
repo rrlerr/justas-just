@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import { Menu, X, ShoppingCart, Phone } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
+import CartDrawer from "./CartDrawer";
+import CheckoutModal from "./CheckoutModal";
+import ContactModal from "./ContactModal";
 
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const { itemCount, openCart } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,11 +59,22 @@ export default function NavBar() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="glass-morphism px-4 py-2 rounded-lg hover:bg-[var(--electric)]/20 transition-all duration-300 flex items-center space-x-2">
+            <button 
+              onClick={openCart}
+              className="glass-morphism px-4 py-2 rounded-lg hover:bg-[var(--electric)]/20 transition-all duration-300 flex items-center space-x-2 relative"
+            >
               <ShoppingCart className="h-4 w-4" />
               <span>Cart</span>
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[var(--electric)] text-[var(--midnight)] text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
             </button>
-            <button className="btn-gradient px-6 py-2 rounded-lg flex items-center space-x-2">
+            <button 
+              onClick={() => setIsContactOpen(true)}
+              className="btn-gradient px-6 py-2 rounded-lg flex items-center space-x-2"
+            >
               <Phone className="h-4 w-4" />
               <span>Contact</span>
             </button>
@@ -89,11 +107,28 @@ export default function NavBar() {
               </a>
             ))}
             <div className="flex flex-col space-y-2 px-3 pt-2">
-              <button className="glass-morphism px-4 py-2 rounded-lg hover:bg-[var(--electric)]/20 transition-all duration-300 flex items-center space-x-2">
+              <button 
+                onClick={() => {
+                  openCart();
+                  setIsMenuOpen(false);
+                }}
+                className="glass-morphism px-4 py-2 rounded-lg hover:bg-[var(--electric)]/20 transition-all duration-300 flex items-center space-x-2 relative"
+              >
                 <ShoppingCart className="h-4 w-4" />
                 <span>Cart</span>
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[var(--electric)] text-[var(--midnight)] text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {itemCount}
+                  </span>
+                )}
               </button>
-              <button className="btn-gradient px-6 py-2 rounded-lg flex items-center space-x-2">
+              <button 
+                onClick={() => {
+                  setIsContactOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="btn-gradient px-6 py-2 rounded-lg flex items-center space-x-2"
+              >
                 <Phone className="h-4 w-4" />
                 <span>Contact</span>
               </button>
@@ -101,6 +136,10 @@ export default function NavBar() {
           </div>
         </div>
       )}
+      
+      <CartDrawer />
+      <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} />
+      <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
     </nav>
   );
 }

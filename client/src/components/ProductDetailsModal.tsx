@@ -1,11 +1,15 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { X, ShoppingCart, Heart, Star } from "lucide-react";
+import { X, ShoppingCart, Heart, Star, Plus, Minus } from "lucide-react";
 import { Product } from "@/types/product";
 import { useProductModal } from "@/hooks/useProductModal";
+import { useCart } from "@/hooks/useCart";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function ProductDetailsModal() {
   const { isOpen, product, closeModal } = useProductModal();
+  const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
 
   if (!product) return null;
 
@@ -99,15 +103,42 @@ export default function ProductDetailsModal() {
                 </div>
               </div>
 
-              <div className="flex space-x-4 mb-6">
-                <button className="btn-gradient px-6 py-3 rounded-lg font-semibold flex-1 flex items-center justify-center space-x-2">
-                  <ShoppingCart className="h-5 w-5" />
-                  <span>Add to Cart</span>
-                </button>
-                <button className="glass-morphism px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-all duration-300 flex items-center space-x-2">
-                  <Heart className="h-5 w-5" />
-                  <span>Wishlist</span>
-                </button>
+              <div className="mb-6">
+                <div className="flex items-center space-x-4 mb-4">
+                  <span className="text-sm font-medium">Quantity:</span>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="glass-morphism w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="w-12 text-center font-semibold">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="glass-morphism w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="flex space-x-4">
+                  <button 
+                    onClick={() => {
+                      addToCart(product, quantity);
+                      closeModal();
+                    }}
+                    className="btn-gradient px-6 py-3 rounded-lg font-semibold flex-1 flex items-center justify-center space-x-2"
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    <span>Add to Cart</span>
+                  </button>
+                  <button className="glass-morphism px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-all duration-300 flex items-center space-x-2">
+                    <Heart className="h-5 w-5" />
+                    <span>Wishlist</span>
+                  </button>
+                </div>
               </div>
 
               {product.features && product.features.length > 0 && (

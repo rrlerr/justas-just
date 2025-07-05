@@ -34,11 +34,11 @@ export default function CustomCursor() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 w-5 h-5 border-2 border-[var(--electric)] rounded-full pointer-events-none z-[9999] mix-blend-difference"
+      className="fixed top-0 left-0 w-2 h-2 bg-[var(--electric)] pointer-events-none z-[9999] mix-blend-difference"
       animate={{
-        x: mousePosition.x - 10,
-        y: mousePosition.y - 10,
-        scale: isHovering ? 2 : 1,
+        x: mousePosition.x - 4,
+        y: mousePosition.y - 4,
+        scale: isHovering ? 3 : 1,
       }}
       transition={{
         type: "spring",
@@ -46,7 +46,7 @@ export default function CustomCursor() {
         damping: 28,
       }}
       style={{
-        backgroundColor: isHovering ? 'rgba(0, 212, 255, 0.3)' : 'transparent',
+        backgroundColor: isHovering ? 'rgba(0, 212, 255, 0.8)' : 'rgba(0, 212, 255, 0.6)',
       }}
     />
   );
