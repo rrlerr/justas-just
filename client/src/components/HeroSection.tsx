@@ -21,9 +21,9 @@ export default function HeroSection() {
           className="animate-float"
         >
           <h1 className="text-6xl md:text-8xl font-bold font-inter mb-6 text-gradient">
-            Premium Industrial
+            Mittsu Megami
             <br />
-            <span className="text-5xl md:text-7xl">Printing Solutions</span>
+            <span className="text-2xl md:text-7xl">Professional Printing Solutions</span>
           </h1>
         </motion.div>
         

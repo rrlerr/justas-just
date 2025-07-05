@@ -33,6 +33,9 @@ export default function Home() {
       <TrustIndicators />
       <Footer />
       <ProductDetailsModal />
+
+      {/* 👇 This is the "About" anchor point that the nav will scroll to */}
+      <div id="about" className="h-1" />
     </div>
   );
 }

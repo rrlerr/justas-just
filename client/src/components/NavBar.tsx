@@ -25,7 +25,7 @@ export default function NavBar() {
     { label: "Products", href: "#products" },
     { label: "Solutions", href: "#solutions" },
     { label: "Support", href: "#support" },
-    { label: "About", href: "#about" },
+    { label: "About", href: "#bottom" }, // Scrolls to bottom of the page
   ];
 
   return (
@@ -41,7 +41,7 @@ export default function NavBar() {
               </h1>
             </div>
           </div>
-          
+
           {/* Desktop Menu */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
@@ -136,7 +136,7 @@ export default function NavBar() {
           </div>
         </div>
       )}
-      
+
       <CartDrawer />
       <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} />
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
