@@ -6,8 +6,8 @@ import axios from "axios";
 interface ProductCardProps {
   product: Product;
   isEditable?: boolean;
-  onEdit?: (product: Product) => void;
-  onDelete?: (id: string) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export default function ProductCard({ product, isEditable, onEdit, onDelete }: ProductCardProps) {
