@@ -18,8 +18,8 @@ export default function NavBar() {
       setIsScrolled(window.scrollY > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navItems = [
@@ -30,9 +30,11 @@ export default function NavBar() {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'glass-morphism' : 'bg-transparent'
-    }`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "glass-morphism" : "bg-transparent"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
@@ -60,19 +62,19 @@ export default function NavBar() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
+            <Link
               to="/admin-login"
-              className="glass-morphism px-4 py-2 rounded-lg text-white hover:bg-[var(--electric)]/20 transition-all duration-300"
+              className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg text-white hover:bg-[var(--electric)]/20 transition-all duration-300"
             >
               Admin Login
             </Link>
-            <Link 
+            <Link
               to="/employee-login"
-              className="glass-morphism px-4 py-2 rounded-lg text-white hover:bg-[var(--electric)]/20 transition-all duration-300"
+              className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg text-white hover:bg-[var(--electric)]/20 transition-all duration-300"
             >
               Employee Login
             </Link>
-            <button 
+            <button
               onClick={openCart}
               className="glass-morphism px-4 py-2 rounded-lg hover:bg-[var(--electric)]/20 transition-all duration-300 flex items-center space-x-2 relative"
             >
@@ -84,7 +86,7 @@ export default function NavBar() {
                 </span>
               )}
             </button>
-            <button 
+            <button
               onClick={() => setIsContactOpen(true)}
               className="btn-gradient px-6 py-2 rounded-lg flex items-center space-x-2"
             >
@@ -99,7 +101,11 @@ export default function NavBar() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="glass-morphism p-2 rounded-lg transition-all duration-300"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
@@ -121,21 +127,21 @@ export default function NavBar() {
             ))}
             <Link
               to="/admin-login"
-              className="block px-3 py-2 text-white hover:text-[var(--electric)] transition-colors duration-300"
+              className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg text-white hover:bg-[var(--electric)]/20"
               onClick={() => setIsMenuOpen(false)}
             >
               Admin Login
             </Link>
             <Link
               to="/employee-login"
-              className="block px-3 py-2 text-white hover:text-[var(--electric)] transition-colors duration-300"
+              className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg text-white hover:bg-[var(--electric)]/20"
               onClick={() => setIsMenuOpen(false)}
             >
               Employee Login
             </Link>
 
             <div className="flex flex-col space-y-2 px-3 pt-2">
-              <button 
+              <button
                 onClick={() => {
                   openCart();
                   setIsMenuOpen(false);
@@ -150,7 +156,7 @@ export default function NavBar() {
                   </span>
                 )}
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setIsContactOpen(true);
                   setIsMenuOpen(false);
@@ -166,8 +172,14 @@ export default function NavBar() {
       )}
 
       <CartDrawer />
-      <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} />
-      <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+      />
+      <ContactModal
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+      />
     </nav>
   );
 }
