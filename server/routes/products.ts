@@ -1,44 +1,99 @@
+// server/routes/products.ts
 import express from "express";
 import supabase from "../utils/supabase";
-const { data: products, error } = await supabase.from("products").select("*");
-
-if (error) throw error;
-
 
 const router = express.Router();
 
-// Edit product
-router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { name, price, description, image } = req.body;
-
-  try {
-    const { data, error } = await db
-      .from("products")
-      .update({ name, price, description, image })
-      .eq("id", id);
-
-    if (error) throw error;
-
-    res.json({ message: "Product updated", data });
-  } catch (err) {
-    res.status(500).json({ message: "Update failed", error: err.message });
-  }
+// GET all products
+router.get("/", async (req, res) => {
+  const { data, error } = await supabase.from("products").select("*");
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-// Delete product
+// POST create a new product
+router.post("/", async (req, res) => {
+  const {
+    name,
+    description,
+    price,
+    image,
+    badge,
+    rating,
+    reviewCount,
+    printWidth,
+    printSpeed,
+    resolution,
+    features, // expect an array or comma-separated string
+  } = req.body;
+
+  const { data, error } = await supabase.from("products").insert([
+    {
+      name,
+      description,
+      price,
+      image,
+      badge,
+      rating,
+      reviewCount,
+      printWidth,
+      printSpeed,
+      resolution,
+      features,
+    },
+  ]);
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.status(201).json(data);
+});
+
+// PUT update a product by ID
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const {
+    name,
+    description,
+    price,
+    image,
+    badge,
+    rating,
+    reviewCount,
+    printWidth,
+    printSpeed,
+    resolution,
+    features,
+  } = req.body;
+
+  const { data, error } = await supabase
+    .from("products")
+    .update({
+      name,
+      description,
+      price,
+      image,
+      badge,
+      rating,
+      reviewCount,
+      printWidth,
+      printSpeed,
+      resolution,
+      features,
+    })
+    .eq("id", id);
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// DELETE a product by ID
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
-  try {
-    const { error } = await db.from("products").delete().eq("id", id);
+  const { error } = await supabase.from("products").delete().eq("id", id);
 
-    if (error) throw error;
-
-    res.json({ message: "Product deleted" });
-  } catch (err) {
-    res.status(500).json({ message: "Delete failed", error: err.message });
-  }
+  if (error) return res.status(500).json({ error: error.message });
+  res.status(204).send(); // No content
 });
 
 export default router;
