@@ -10,14 +10,18 @@ import ParticleBackground from "@/components/ParticleBackground";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
 
+// ✅ Import the login pages
+import AdminLogin from "@/pages/AdminLogin";
+import EmployeeLogin from "@/pages/EmployeeLogin";
+
 function AppRoutes() {
   const [location] = useLocation();
 
   return (
     <>
       <Route path="/" component={Home} />
-      <Route path="/admin-login" component={() => <div>Admin Login Page</div>} />
-      <Route path="/employee-login" component={() => <div>Employee Login Page</div>} />
+      <Route path="/admin-login" component={AdminLogin} />
+      <Route path="/employee-login" component={EmployeeLogin} />
       {/* Fallback route */}
       {!["/", "/admin-login", "/employee-login"].includes(location) && <NotFound />}
     </>
@@ -48,4 +52,3 @@ function App() {
 }
 
 export default App;
-
