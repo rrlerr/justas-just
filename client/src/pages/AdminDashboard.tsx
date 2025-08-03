@@ -1,83 +1,147 @@
-import { useState } from "react";
-import ProductForm from "@/components/ProductForm";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "wouter";
+import ProductCard from "@/components/ProductCard"; // Make sure this is your homepage product card
+import axios from "axios";
 
-interface Product {
-  id: number;
+type Product = {
+  id: string;
   name: string;
-  description: string;
   price: number;
-}
+  imageUrl: string;
+  width: string;
+  reviews: number;
+  label?: string;
+};
+
+type Purchase = {
+  id: string;
+  email: string;
+  productName: string;
+  timestamp: string;
+};
+
+type Message = {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  timestamp: string;
+};
 
 export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const navigate = useNavigate();
 
-  const handleAdd = () => {
-    setEditingProduct(null);
-    setShowForm(true);
-  };
+  useEffect(() => {
+    fetchAll();
+  }, []);
 
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    setShowForm(true);
-  };
-
-  const handleDelete = (id: number) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-  };
-
-  const handleFormSubmit = (data: Product) => {
-    if (editingProduct) {
-      // Edit mode
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProduct.id ? { ...p, ...data } : p))
-      );
-    } else {
-      // Add mode
-      const newProduct = { ...data, id: Date.now() };
-      setProducts((prev) => [...prev, newProduct]);
-    }
-    setShowForm(false);
-  };
+  async function fetchAll() {
+    const [prodRes, purRes, msgRes] = await Promise.all([
+      axios.get("/api/products"),
+      axios.get("/api/purchases"),
+      axios.get("/api/messages"),
+    ]);
+    setProducts(prodRes.data);
+    setPurchases(purRes.data);
+    setMessages(msgRes.data);
+  }
 
   return (
-    <div className="min-h-screen p-8 bg-black text-white">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold">Admin Dashboard</h2>
-        <button onClick={handleAdd} className="btn-gradient px-4 py-2 rounded">Add Product</button>
+    <div className="p-6 space-y-8 text-white">
+      <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
+
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xl font-semibold">Products</p>
+            <p className="text-2xl">{products.length}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xl font-semibold">Purchases</p>
+            <p className="text-2xl">{purchases.length}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xl font-semibold">Messages</p>
+            <p className="text-2xl">{messages.length}</p>
+          </CardContent>
+        </Card>
       </div>
 
-      {showForm && (
-        <ProductForm
-          initialData={editingProduct || undefined}
-          onSubmit={handleFormSubmit}
-          onCancel={() => setShowForm(false)}
-        />
-      )}
+      {/* Product Management */}
+      <div className="flex justify-between items-center mt-8">
+        <h2 className="text-2xl font-bold">Manage Products</h2>
+        <Button onClick={() => navigate("/add-product")}>Add New Product</Button>
+      </div>
 
-      <div className="mt-6 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      {/* Product Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
         {products.map((product) => (
-          <div key={product.id} className="p-4 rounded bg-white/10">
-            <h3 className="text-xl font-semibold">{product.name}</h3>
-            <p className="text-sm text-gray-300">{product.description}</p>
-            <p className="mt-1 font-bold">${product.price.toFixed(2)}</p>
-            <div className="flex gap-2 mt-3">
-              <button
-                onClick={() => handleEdit(product)}
-                className="bg-blue-500 px-3 py-1 rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(product.id)}
-                className="bg-red-500 px-3 py-1 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+          <ProductCard key={product.id} product={product} isEditable />
         ))}
+      </div>
+
+      {/* Purchase Table */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold mb-2">Purchase Records</h2>
+        <Button variant="outline" className="mb-4">Export to Excel</Button>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-white">
+            <thead>
+              <tr className="bg-gray-800">
+                <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2">Product</th>
+                <th className="px-4 py-2">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {purchases.map((p) => (
+                <tr key={p.id} className="border-b border-gray-700">
+                  <td className="px-4 py-2">{p.email}</td>
+                  <td className="px-4 py-2">{p.productName}</td>
+                  <td className="px-4 py-2">{new Date(p.timestamp).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Messages Table */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold mb-2">Contact Messages</h2>
+        <Button variant="outline" className="mb-4">Export to Excel</Button>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-white">
+            <thead>
+              <tr className="bg-gray-800">
+                <th className="px-4 py-2">Name</th>
+                <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2">Message</th>
+                <th className="px-4 py-2">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {messages.map((m) => (
+                <tr key={m.id} className="border-b border-gray-700">
+                  <td className="px-4 py-2">{m.name}</td>
+                  <td className="px-4 py-2">{m.email}</td>
+                  <td className="px-4 py-2">{m.message}</td>
+                  <td className="px-4 py-2">{new Date(m.timestamp).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
