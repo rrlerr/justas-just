@@ -10,9 +10,11 @@ import ParticleBackground from "@/components/ParticleBackground";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
 
-// ✅ Import the login pages
+// ✅ Import the login and dashboard pages
 import AdminLogin from "@/pages/AdminLogin";
 import EmployeeLogin from "@/pages/EmployeeLogin";
+import AdminDashboard from "@/pages/AdminDashboard";
+import EmployeeDashboard from "@/pages/EmployeeDashboard";
 
 function AppRoutes() {
   const [location] = useLocation();
@@ -22,8 +24,17 @@ function AppRoutes() {
       <Route path="/" component={Home} />
       <Route path="/admin-login" component={AdminLogin} />
       <Route path="/employee-login" component={EmployeeLogin} />
-      {/* Fallback route */}
-      {!["/", "/admin-login", "/employee-login"].includes(location) && <NotFound />}
+      <Route path="/admin-dashboard" component={AdminDashboard} />
+      <Route path="/employee-dashboard" component={EmployeeDashboard} />
+
+      {/* Fallback for unknown routes */}
+      {![
+        "/", 
+        "/admin-login", 
+        "/employee-login", 
+        "/admin-dashboard", 
+        "/employee-dashboard"
+      ].includes(location) && <NotFound />}
     </>
   );
 }
