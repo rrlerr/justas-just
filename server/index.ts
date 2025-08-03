@@ -1,4 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
+
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -6,11 +8,13 @@ import { setupVite, serveStatic, log } from "./vite";
 import productRoutes from "./routes/products";
 
 const app = express();
+
+// Enable CORS if your frontend is on a different domain/port
+app.use(cors());
+
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// ✅ Register the /api/products routes
-app.use("/api/products", productRoutes);
 
 // Logging middleware
 app.use((req, res, next) => {
@@ -43,16 +47,24 @@ app.use((req, res, next) => {
   next();
 });
 
+// ✅ Register API routes
+app.use("/api/products", productRoutes);
+
+// Optional health check route
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
+// Catch errors from routes
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ message });
+  throw err;
+});
+
 (async () => {
   const server = await registerRoutes(app);
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
 
   // Setup Vite in development only
   if (app.get("env") === "development") {
@@ -69,7 +81,7 @@ app.use((req, res, next) => {
       reusePort: true,
     },
     () => {
-      log(`serving on port ${port}`);
+      log(`🚀 Server running on port ${port}`);
     }
   );
 })();
