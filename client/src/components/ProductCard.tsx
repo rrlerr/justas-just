@@ -5,8 +5,8 @@ import { useProductModal } from "@/hooks/useProductModal";
 interface ProductCardProps {
   product: Product;
   isEditable?: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
+  onEdit?: (product: Product) => void;
+  onDelete?: (id: string) => void;
 }
 
 export default function ProductCard({
@@ -115,7 +115,7 @@ export default function ProductCard({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onEdit?.();
+                  onEdit?.(product);
                 }}
                 className="text-blue-500 hover:text-blue-700"
               >
@@ -124,7 +124,7 @@ export default function ProductCard({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDelete?.();
+                  onDelete?.(product.id);
                 }}
                 className="text-red-500 hover:text-red-700"
               >
