@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import ProductCard from "@/components/ProductCard";
 import axios from "axios";
 
@@ -37,7 +37,9 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
+navigate("/somewhere");
+
 
   useEffect(() => {
     fetchAll();
