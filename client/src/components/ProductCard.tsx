@@ -1,12 +1,16 @@
-import { Star, Eye } from "lucide-react";
+import { Star, Eye, Pencil, Trash } from "lucide-react";
 import { Product } from "@/types/product";
 import { useProductModal } from "@/hooks/useProductModal";
+import axios from "axios";
 
 interface ProductCardProps {
   product: Product;
+  isEditable?: boolean;
+  onEdit?: (product: Product) => void;
+  onDelete?: (id: string) => void;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, isEditable, onEdit, onDelete }: ProductCardProps) {
   const { openModal } = useProductModal();
 
   const getBadgeColor = (badge: string) => {
@@ -41,8 +45,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className="card-3d glass-morphism rounded-2xl overflow-hidden magnetic-hover cursor-pointer group"
-      onClick={() => openModal(product)}
+      className="card-3d glass-morphism rounded-2xl overflow-hidden magnetic-hover cursor-pointer group relative"
+      onClick={() => !isEditable && openModal(product)}
     >
       <div className="relative overflow-hidden">
         <img
@@ -58,7 +62,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
       </div>
-      
+
       <div className="p-6">
         <h3 className="text-xl font-bold font-inter mb-2 text-white">
           {product.name}
@@ -66,7 +70,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <p className="text-[var(--platinum)]/70 mb-4 line-clamp-2">
           {product.description}
         </p>
-        
+
         <div className="flex items-center justify-between mb-4">
           <span className="text-2xl font-bold text-[var(--electric)]">
             ${parseFloat(product.price).toLocaleString()}
@@ -80,7 +84,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </span>
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             {renderStars(product.rating)}
@@ -88,10 +92,34 @@ export default function ProductCard({ product }: ProductCardProps) {
               ({product.reviewCount} reviews)
             </span>
           </div>
-          <button className="btn-gradient px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2">
-            <Eye className="h-4 w-4" />
-            <span>View Details</span>
-          </button>
+
+          {isEditable ? (
+            <div className="flex space-x-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.(product);
+                }}
+                className="text-blue-500 hover:text-blue-700"
+              >
+                <Pencil className="h-5 w-5" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete?.(product.id);
+                }}
+                className="text-red-500 hover:text-red-700"
+              >
+                <Trash className="h-5 w-5" />
+              </button>
+            </div>
+          ) : (
+            <button className="btn-gradient px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2">
+              <Eye className="h-4 w-4" />
+              <span>View Details</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
