@@ -1,52 +1,47 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 
 export default function AdminLogin() {
+  const [, navigate] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle admin login logic here
-    alert(`Admin login:\nEmail: ${email}\nPassword: ${password}`);
+
+    // Fake check (replace with real backend call later)
+    if (email === "admin@example.com" && password === "admin123") {
+      localStorage.setItem("userRole", "admin");
+      navigate("/admin-dashboard");
+    } else {
+      setError("Invalid admin credentials.");
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--midnight)] text-white">
-      <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm mb-1">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/70"
-              placeholder="admin@example.com"
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm mb-1">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/70"
-              placeholder="••••••••"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-[var(--electric)] text-[var(--midnight)] py-2 rounded-lg font-bold hover:opacity-90 transition"
-          >
-            Log In
-          </button>
-        </form>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <form onSubmit={handleLogin} className="bg-white/10 p-8 rounded-lg space-y-4 w-full max-w-sm">
+        <h2 className="text-2xl font-bold">Admin Login</h2>
+        <input
+          type="email"
+          placeholder="Admin Email"
+          className="w-full p-2 rounded bg-white/5 border border-white/20"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="w-full p-2 rounded bg-white/5 border border-white/20"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+        <button type="submit" className="btn-gradient w-full py-2 rounded">Login</button>
+      </form>
     </div>
   );
 }
