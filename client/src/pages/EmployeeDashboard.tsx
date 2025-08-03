@@ -1,17 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ProductCard from "@/components/ProductCard";
 import ProductForm from "@/components/ProductForm";
+import axios from "axios";
 
-interface Product {
-  id: number;
+type Product = {
+  id: string;
   name: string;
-  description: string;
   price: number;
-}
+  image: string;
+  description: string;
+  badge?: string;
+  printWidth?: string;
+  printSpeed?: string;
+  rating: string;
+  reviewCount: number;
+};
 
 export default function EmployeeDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    const res = await axios.get("/api/products");
+    setProducts(res.data);
+  };
 
   const handleAdd = () => {
     setEditingProduct(null);
@@ -23,23 +40,23 @@ export default function EmployeeDashboard() {
     setShowForm(true);
   };
 
-  const handleFormSubmit = (data: Product) => {
+  const handleFormSubmit = async (data: Partial<Product>) => {
     if (editingProduct) {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProduct.id ? { ...p, ...data } : p))
-      );
+      await axios.put(`/api/products/${editingProduct.id}`, data);
     } else {
-      const newProduct = { ...data, id: Date.now() };
-      setProducts((prev) => [...prev, newProduct]);
+      await axios.post("/api/products", data);
     }
     setShowForm(false);
+    fetchProducts();
   };
 
   return (
     <div className="min-h-screen p-8 bg-black text-white">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold">Employee Dashboard</h2>
-        <button onClick={handleAdd} className="btn-gradient px-4 py-2 rounded">Add Product</button>
+        <button onClick={handleAdd} className="btn-gradient px-4 py-2 rounded">
+          Add Product
+        </button>
       </div>
 
       {showForm && (
@@ -50,21 +67,15 @@ export default function EmployeeDashboard() {
         />
       )}
 
-      <div className="mt-6 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          <div key={product.id} className="p-4 rounded bg-white/10">
-            <h3 className="text-xl font-semibold">{product.name}</h3>
-            <p className="text-sm text-gray-300">{product.description}</p>
-            <p className="mt-1 font-bold">${product.price.toFixed(2)}</p>
-            <div className="flex gap-2 mt-3">
-              <button
-                onClick={() => handleEdit(product)}
-                className="bg-blue-500 px-3 py-1 rounded"
-              >
-                Edit
-              </button>
-            </div>
-          </div>
+          <ProductCard
+            key={product.id}
+            product={product}
+            isEditable
+            onEdit={() => handleEdit(product)}
+            // No delete for employees by default — unless you want to allow it
+          />
         ))}
       </div>
     </div>
