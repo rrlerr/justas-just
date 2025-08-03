@@ -4,6 +4,7 @@ import { useCart } from "@/hooks/useCart";
 import CartDrawer from "./CartDrawer";
 import CheckoutModal from "./CheckoutModal";
 import ContactModal from "./ContactModal";
+import { Link } from "react-router-dom";
 
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,7 +26,7 @@ export default function NavBar() {
     { label: "Products", href: "#products" },
     { label: "Solutions", href: "#solutions" },
     { label: "Support", href: "#support" },
-    { label: "About", href: "#bottom" }, // Scrolls to bottom of the page
+    { label: "About", href: "#bottom" },
   ];
 
   return (
@@ -54,6 +55,13 @@ export default function NavBar() {
                   {item.label}
                 </a>
               ))}
+              {/* Admin & Employee Login Links */}
+              <Link to="/admin-login" className="text-white hover:text-[var(--electric)] transition-colors duration-300 font-medium">
+                Admin Login
+              </Link>
+              <Link to="/employee-login" className="text-white hover:text-[var(--electric)] transition-colors duration-300 font-medium">
+                Employee Login
+              </Link>
             </div>
           </div>
 
@@ -106,6 +114,22 @@ export default function NavBar() {
                 {item.label}
               </a>
             ))}
+            {/* Mobile Admin/Employee Login */}
+            <Link
+              to="/admin-login"
+              className="block px-3 py-2 text-white hover:text-[var(--electric)] transition-colors duration-300"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Admin Login
+            </Link>
+            <Link
+              to="/employee-login"
+              className="block px-3 py-2 text-white hover:text-[var(--electric)] transition-colors duration-300"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Employee Login
+            </Link>
+
             <div className="flex flex-col space-y-2 px-3 pt-2">
               <button 
                 onClick={() => {
