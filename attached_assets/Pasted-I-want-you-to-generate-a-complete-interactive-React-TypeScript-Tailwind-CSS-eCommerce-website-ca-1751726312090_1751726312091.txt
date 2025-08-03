@@ -1,0 +1,71 @@
+I want you to generate a complete interactive React + TypeScript + Tailwind CSS eCommerce website called **MitsuPrinters** that looks and functions like a modern Shopify-style site.
+
+It should match the design and functionality of this project: a homepage featuring Mimaki printers, with product cards, category sections, modals, sticky navbars, hover animations, AOS scroll effects, and a product showcase carousel.
+
+### Project Requirements:
+
+✅ Tech Stack:
+- React + TypeScript
+- Tailwind CSS
+- Vite as bundler
+- AOS (Animate On Scroll)
+- Framer Motion (animations)
+- Lucide-react for icons
+- State management with `useState` and `react-query` for product fetching (mocked)
+- Components should be reusable
+
+✅ Pages:
+- `Home.tsx` — main page with hero section, product categories, featured products, product showcase, trust indicators
+- Product cards with zoom hover + "View Details" button that opens modal
+- Sticky "Add to Cart" button in modal
+- Product carousel using `swiper` or `react-slick`
+- Product specs like printWidth, speed, and badge (new, eco-friendly, etc.)
+- Page layout fully responsive and animated on scroll using AOS
+
+✅ Components:
+- `HeroSection.tsx` — banner with heading and CTA
+- `ProductCard.tsx` — with hover zoom, price, image, name, description, and modal trigger
+- `ProductDetailsModal.tsx` — modal with full product view
+- `ProductShowcase.tsx` — large featured product with carousel
+- `TrustIndicators.tsx` — icons and text for trust, warranty, support
+- `NavBar.tsx` — sticky navbar with logo, links
+- `Footer.tsx` — clean footer
+
+✅ Files:
+- `src/pages/Home.tsx`
+- `src/components/ui/*`
+- `src/lib/animations.ts` — fadeInUp and staggerChildren for Framer Motion
+- `public/index.html` — includes AOS script/css
+- `src/main.tsx` — app root
+- `products.json` — sample product data
+
+✅ Bonus:
+- Add `_redirects` file in `public/` for Netlify to avoid 404s
+- Include `README.md` for setup instructions
+- Use mock product API (`/api/products/featured`, `/api/products/category/ink`) — or use static JSON
+
+### The site must look clean, animated, and modern — similar to a Shopify or Webflow eCommerce template.
+
+Now generate the **entire file structure and code**, organized and production-ready.
+⚡️ How to Use This Prompt
+Paste into ChatGPT with GPT-4 or Pro (like you are using)
+
+Or use it on Gemini, Copilot, or Codeium
+
+Ask it to generate files one by one (start with Home.tsx, then App.tsx, etc.)
+
+Would you like me to generate each of these files for you one by one right now and help you set them up on Replit or Netlify?
+
+
+
+
+
+
+
+
+
+Ask ChatGPT
+You said:
+name will be mittsu megumi, a professional printer solutions
+
+
