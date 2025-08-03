@@ -1,5 +1,9 @@
 import express from "express";
-import db from "../utils/db";
+import supabase from "../utils/supabase";
+const { data: products, error } = await supabase.from("products").select("*");
+
+if (error) throw error;
+
 
 const router = express.Router();
 
