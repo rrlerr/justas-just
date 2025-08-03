@@ -1,7 +1,6 @@
 import { Star, Eye, Pencil, Trash } from "lucide-react";
 import { Product } from "@/types/product";
 import { useProductModal } from "@/hooks/useProductModal";
-import axios from "axios";
 
 interface ProductCardProps {
   product: Product;
@@ -10,18 +9,30 @@ interface ProductCardProps {
   onDelete?: () => void;
 }
 
-export default function ProductCard({ product, isEditable, onEdit, onDelete }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  isEditable = false,
+  onEdit,
+  onDelete,
+}: ProductCardProps) {
   const { openModal } = useProductModal();
 
   const getBadgeColor = (badge: string) => {
     switch (badge) {
-      case 'NEW': return 'bg-[var(--electric)]/90 text-[var(--midnight)]';
-      case 'ECO': return 'bg-green-500/90 text-white';
-      case 'PREMIUM': return 'bg-purple-500/90 text-white';
-      case 'HOT': return 'bg-red-500/90 text-white';
-      case 'BESTSELLER': return 'bg-blue-500/90 text-white';
-      case '3D READY': return 'bg-gradient-to-r from-[var(--electric)] to-blue-500 text-white';
-      default: return 'bg-gray-500/90 text-white';
+      case "NEW":
+        return "bg-[var(--electric)]/90 text-[var(--midnight)]";
+      case "ECO":
+        return "bg-green-500/90 text-white";
+      case "PREMIUM":
+        return "bg-purple-500/90 text-white";
+      case "HOT":
+        return "bg-red-500/90 text-white";
+      case "BESTSELLER":
+        return "bg-blue-500/90 text-white";
+      case "3D READY":
+        return "bg-gradient-to-r from-[var(--electric)] to-blue-500 text-white";
+      default:
+        return "bg-gray-500/90 text-white";
     }
   };
 
@@ -29,13 +40,15 @@ export default function ProductCard({ product, isEditable, onEdit, onDelete }: P
     const numRating = parseFloat(rating);
     const fullStars = Math.floor(numRating);
     const hasHalfStar = numRating % 1 !== 0;
-    
+
     return (
       <div className="flex items-center space-x-1">
         {[...Array(fullStars)].map((_, i) => (
           <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
         ))}
-        {hasHalfStar && <Star className="h-4 w-4 fill-yellow-400/50 text-yellow-400" />}
+        {hasHalfStar && (
+          <Star className="h-4 w-4 fill-yellow-400/50 text-yellow-400" />
+        )}
         {[...Array(5 - Math.ceil(numRating))].map((_, i) => (
           <Star key={i} className="h-4 w-4 text-gray-400" />
         ))}
@@ -56,7 +69,11 @@ export default function ProductCard({ product, isEditable, onEdit, onDelete }: P
         />
         {product.badge && (
           <div className="absolute top-4 left-4">
-            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getBadgeColor(product.badge)}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-semibold ${getBadgeColor(
+                product.badge
+              )}`}
+            >
               {product.badge}
             </span>
           </div>
@@ -77,7 +94,7 @@ export default function ProductCard({ product, isEditable, onEdit, onDelete }: P
           </span>
           <div className="flex items-center space-x-2">
             <span className="text-sm text-[var(--platinum)]/60">
-              {product.printWidth ? 'Width:' : 'Speed:'}
+              {product.printWidth ? "Width:" : "Speed:"}
             </span>
             <span className="text-sm font-semibold text-white">
               {product.printWidth || product.printSpeed}
@@ -98,7 +115,7 @@ export default function ProductCard({ product, isEditable, onEdit, onDelete }: P
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onEdit?.(product);
+                  onEdit?.();
                 }}
                 className="text-blue-500 hover:text-blue-700"
               >
@@ -107,7 +124,7 @@ export default function ProductCard({ product, isEditable, onEdit, onDelete }: P
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDelete?.(product.id);
+                  onDelete?.();
                 }}
                 className="text-red-500 hover:text-red-700"
               >
