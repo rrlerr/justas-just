@@ -1,4 +1,5 @@
-import { useState } from "react";
+// client/components/ProductForm.tsx
+import React, { useState } from "react";
 import axios from "axios";
 
 interface ProductFormProps {
@@ -7,14 +8,11 @@ interface ProductFormProps {
   onCancel: () => void;
 }
 
-const badgeOptions = ["", "NEW", "ECO", "PREMIUM", "HOT", "BESTSELLER", "3D READY"];
-
 export default function ProductForm({ initialData, onSubmit, onCancel }: ProductFormProps) {
   const [form, setForm] = useState({
     name: initialData?.name || "",
     description: initialData?.description || "",
-    imageFile: null as File | null,
-    imagePreview: initialData?.image || "",
+    image: initialData?.image || "",
     price: initialData?.price || "",
     badge: initialData?.badge || "",
     printWidth: initialData?.printWidth || "",
@@ -31,80 +29,37 @@ export default function ProductForm({ initialData, onSubmit, onCancel }: Product
     }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const preview = URL.createObjectURL(file);
-      setForm((prev) => ({
-        ...prev,
-        imageFile: file,
-        imagePreview: preview,
-      }));
-    }
-  };
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
-    let imageUrl = form.imagePreview;
-
-    // Simulate image upload (replace with your logic)
-    if (form.imageFile) {
-      const uploadData = new FormData();
-      uploadData.append("file", form.imageFile);
-      // Example: upload to Supabase or Cloudinary, etc.
-      // const { data } = await axios.post("/upload", uploadData);
-      // imageUrl = data.url;
-    }
-
-    const payload = {
-      name: form.name,
-      description: form.description,
-      image: imageUrl,
-      price: form.price,
-      badge: form.badge,
-      printWidth: form.printWidth,
-      printSpeed: form.printSpeed,
-      rating: form.rating,
-      reviewCount: form.reviewCount,
-    };
-
     if (initialData) {
-      await axios.put(`/api/products/${initialData.id}`, payload);
+      await axios.put(`/api/products/${initialData.id}`, form);
     } else {
-      await axios.post("/api/products", payload);
+      await axios.post("/api/products", form);
     }
-
     onSubmit();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white/10 p-6 rounded-lg text-white space-y-4">
-      <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
-      <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" required />
-
-      {/* Image Upload */}
-      <input type="file" accept="image/*" onChange={handleImageUpload} />
-      {form.imagePreview && (
-        <img src={form.imagePreview} alt="Preview" className="w-32 h-32 object-cover rounded" />
-      )}
-
-      <input name="price" type="number" step="0.01" value={form.price} onChange={handleChange} placeholder="Price" required />
-
-      {/* Badge Dropdown */}
-      <select name="badge" value={form.badge} onChange={handleChange}>
-        {badgeOptions.map((option) => (
-          <option key={option} value={option}>{option || "Select Badge"}</option>
-        ))}
-      </select>
-
-      <input name="printWidth" value={form.printWidth} onChange={handleChange} placeholder="Print Width" />
-      <input name="printSpeed" value={form.printSpeed} onChange={handleChange} placeholder="Print Speed" />
-      <input name="rating" type="number" step="0.1" value={form.rating} onChange={handleChange} placeholder="Rating" />
-      <input name="reviewCount" type="number" value={form.reviewCount} onChange={handleChange} placeholder="Review Count" required />
-
-      <button type="submit" className="btn-gradient px-4 py-2 rounded">Save</button>
-      <button type="button" onClick={onCancel} className="bg-red-500 px-4 py-2 rounded">Cancel</button>
-    </form>
+    <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg text-black w-full max-w-lg space-y-4 shadow-lg"
+      >
+        <h2 className="text-2xl font-bold mb-2">{initialData ? "Edit Product" : "Add Product"}</h2>
+        <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required className="input" />
+        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" required className="input" />
+        <input name="image" value={form.image} onChange={handleChange} placeholder="Image URL" required className="input" />
+        <input name="price" type="number" step="0.01" value={form.price} onChange={handleChange} placeholder="Price" required className="input" />
+        <input name="badge" value={form.badge} onChange={handleChange} placeholder="Badge (e.g. NEW, ECO)" className="input" />
+        <input name="printWidth" value={form.printWidth} onChange={handleChange} placeholder="Print Width" className="input" />
+        <input name="printSpeed" value={form.printSpeed} onChange={handleChange} placeholder="Print Speed" className="input" />
+        <input name="rating" type="number" step="0.1" value={form.rating} onChange={handleChange} placeholder="Rating (e.g. 4.5)" className="input" />
+        <input name="reviewCount" type="number" value={form.reviewCount} onChange={handleChange} placeholder="Review Count" className="input" />
+        <div className="flex justify-end gap-4 mt-4">
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button>
+          <button type="button" onClick={onCancel} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cancel</button>
+        </div>
+      </form>
+    </div>
   );
 }
