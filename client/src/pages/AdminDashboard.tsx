@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import ProductForm from '../components/ProductForm';
-import { supabase } from "../utils/supabase";
+import { supabase } from '../utils/supabase.ts';
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState<any[]>([]);
