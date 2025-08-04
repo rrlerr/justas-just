@@ -1,125 +1,88 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import ProductCard from "../components/ProductCard";
-import ProductForm from "../components/ProductForm";
+// client/app/admin-dashboard/page.tsx
+"use client";
 
-export default function AdminDashboard() {
+import React, { useEffect, useState } from "react";
+import ProductCard from "@/components/ProductCard";
+import ProductForm from "@/components/ProductForm";
+import { createClient } from "@supabase/supabase-js";
+import { Database } from "@/types/supabase"; // adjust path if needed
+
+const supabase = createClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+const AdminDashboard: React.FC = () => {
   const [products, setProducts] = useState<any[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<any>(null);
-  const [discounts, setDiscounts] = useState<{ [key: string]: number }>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
   const fetchProducts = async () => {
-    const { data } = await axios.get("/api/products");
-    setProducts(data);
+    const { data, error } = await supabase.from("products").select("*");
+    if (error) console.error("Fetch error:", error);
+    else setProducts(data);
   };
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  const handleAddNew = () => {
-    setEditingProduct(null);
-    setShowForm(true);
-  };
-
   const handleEdit = (product: any) => {
-    setEditingProduct(product);
-    setShowForm(true);
+    setSelectedProduct(product);
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      await axios.delete(`/api/products/${id}`);
-      fetchProducts();
-    }
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) console.error("Delete error:", error);
+    else fetchProducts();
   };
 
-  const handleFormClose = () => {
-    setShowForm(false);
-    setEditingProduct(null);
+  const handleFormSubmit = async () => {
     fetchProducts();
-  };
-
-  const applyDiscount = async (id: string, discount: number) => {
-    const product = products.find((p) => p.id === id);
-    if (!product) return;
-
-    const newPrice = (
-      parseFloat(product.price) *
-      ((100 - discount) / 100)
-    ).toFixed(2);
-
-    await axios.put(`/api/products/${id}`, {
-      ...product,
-      price: newPrice,
-    });
-
-    setDiscounts((prev) => ({ ...prev, [id]: 0 }));
-    fetchProducts();
+    setIsModalOpen(false);
+    setSelectedProduct(null);
   };
 
   return (
-    <div className="min-h-screen bg-[#0c0e1b] text-white px-8 py-6">
+    <div className="p-6 bg-black min-h-screen text-white">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <button
-          onClick={handleAddNew}
-          className="bg-blue-600 text-white px-5 py-2 rounded shadow hover:bg-blue-700 transition"
+          onClick={() => {
+            setSelectedProduct(null);
+            setIsModalOpen(true);
+          }}
+          className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
         >
           + Add New Product
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {products.map((product) => (
-          <div key={product.id} className="space-y-2">
-            <ProductCard
-              product={product}
-              isEditable
-              onEdit={() => handleEdit(product)}
-              onDelete={() => handleDelete(product.id)}
-            />
-
-            {/* 💰 Discount Field Below Each Card */}
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                className="w-20 px-2 py-1 rounded bg-gray-800 border border-gray-700 text-white"
-                placeholder="% Off"
-                value={discounts[product.id] || ""}
-                onChange={(e) =>
-                  setDiscounts((prev) => ({
-                    ...prev,
-                    [product.id]: parseInt(e.target.value),
-                  }))
-                }
-              />
-              <button
-                onClick={() => applyDiscount(product.id, discounts[product.id] || 0)}
-                className="bg-green-600 px-3 py-1 rounded hover:bg-green-700 transition"
-              >
-                Apply Discount
-              </button>
-            </div>
-          </div>
+          <ProductCard
+            key={product.id}
+            product={product}
+            isEditable
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         ))}
       </div>
 
-      {showForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gray-900 p-8 rounded-lg w-full max-w-2xl shadow-xl border border-gray-700">
-            <h2 className="text-2xl font-semibold mb-4">
-              {editingProduct ? "Edit Product" : "Add New Product"}
-            </h2>
-            <ProductForm
-              initialData={editingProduct}
-              onSubmit={handleFormClose}
-              onCancel={handleFormClose}
-            />
-          </div>
-        </div>
+      {isModalOpen && (
+        <ProductForm
+          initialData={selectedProduct}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedProduct(null);
+          }}
+          onSave={handleFormSubmit}
+        />
       )}
     </div>
   );
-}
+};
+
+export default AdminDashboard;
