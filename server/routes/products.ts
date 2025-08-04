@@ -5,95 +5,39 @@ import supabase from "../utils/supabase";
 const router = express.Router();
 
 // GET all products
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
   const { data, error } = await supabase.from("products").select("*");
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 });
 
-// POST create a new product
+// CREATE a new product
 router.post("/", async (req, res) => {
-  const {
-    name,
-    description,
-    price,
-    image,
-    badge,
-    rating,
-    reviewCount,
-    printWidth,
-    printSpeed,
-    resolution,
-    features, // expect an array or comma-separated string
-  } = req.body;
-
-  const { data, error } = await supabase.from("products").insert([
-    {
-      name,
-      description,
-      price,
-      image,
-      badge,
-      rating,
-      reviewCount,
-      printWidth,
-      printSpeed,
-      resolution,
-      features,
-    },
-  ]);
-
+  const newProduct = req.body;
+  const { data, error } = await supabase.from("products").insert([newProduct]);
   if (error) return res.status(500).json({ error: error.message });
-  res.status(201).json(data);
+  res.status(201).json(data[0]);
 });
 
-// PUT update a product by ID
+// UPDATE a product
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-
-  const {
-    name,
-    description,
-    price,
-    image,
-    badge,
-    rating,
-    reviewCount,
-    printWidth,
-    printSpeed,
-    resolution,
-    features,
-  } = req.body;
-
+  const updatedData = req.body;
   const { data, error } = await supabase
     .from("products")
-    .update({
-      name,
-      description,
-      price,
-      image,
-      badge,
-      rating,
-      reviewCount,
-      printWidth,
-      printSpeed,
-      resolution,
-      features,
-    })
-    .eq("id", id);
-
+    .update(updatedData)
+    .eq("id", id)
+    .select();
   if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  res.json(data[0]);
 });
 
-// DELETE a product by ID
+// DELETE a product
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
-
   const { error } = await supabase.from("products").delete().eq("id", id);
-
   if (error) return res.status(500).json({ error: error.message });
-  res.status(204).send(); // No content
+  res.status(200).json({ message: "Product deleted" });
 });
 
 export default router;
