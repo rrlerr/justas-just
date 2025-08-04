@@ -1,144 +1,56 @@
-import { Star, Eye, Pencil, Trash } from "lucide-react";
-import { Product } from "@/types/product";
-import { useProductModal } from "@/hooks/useProductModal";
+// client/components/ProductCard.tsx
+import React from "react";
 
 interface ProductCardProps {
-  product: Product;
+  product: {
+    id: string;
+    name: string;
+    description: string;
+    image: string;
+    price: number;
+    badge?: string;
+    printWidth?: string;
+    printSpeed?: string;
+    rating?: number;
+    reviewCount?: number;
+  };
   isEditable?: boolean;
-  onEdit?: (product: Product) => void;
+  onEdit?: (product: any) => void;
   onDelete?: (id: string) => void;
 }
 
-export default function ProductCard({
-  product,
-  isEditable = false,
-  onEdit,
-  onDelete,
-}: ProductCardProps) {
-  const { openModal } = useProductModal();
-
-  const getBadgeColor = (badge: string) => {
-    switch (badge) {
-      case "NEW":
-        return "bg-[var(--electric)]/90 text-[var(--midnight)]";
-      case "ECO":
-        return "bg-green-500/90 text-white";
-      case "PREMIUM":
-        return "bg-purple-500/90 text-white";
-      case "HOT":
-        return "bg-red-500/90 text-white";
-      case "BESTSELLER":
-        return "bg-blue-500/90 text-white";
-      case "3D READY":
-        return "bg-gradient-to-r from-[var(--electric)] to-blue-500 text-white";
-      default:
-        return "bg-gray-500/90 text-white";
-    }
-  };
-
-  const renderStars = (rating: string) => {
-    const numRating = parseFloat(rating);
-    const fullStars = Math.floor(numRating);
-    const hasHalfStar = numRating % 1 !== 0;
-
-    return (
-      <div className="flex items-center space-x-1">
-        {[...Array(fullStars)].map((_, i) => (
-          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-        ))}
-        {hasHalfStar && (
-          <Star className="h-4 w-4 fill-yellow-400/50 text-yellow-400" />
-        )}
-        {[...Array(5 - Math.ceil(numRating))].map((_, i) => (
-          <Star key={i} className="h-4 w-4 text-gray-400" />
-        ))}
-      </div>
-    );
-  };
-
+const ProductCard: React.FC<ProductCardProps> = ({ product, isEditable, onEdit, onDelete }) => {
   return (
-    <div
-      className="card-3d glass-morphism rounded-2xl overflow-hidden magnetic-hover cursor-pointer group relative"
-      onClick={() => !isEditable && openModal(product)}
-    >
-      <div className="relative overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
-        />
-        {product.badge && (
-          <div className="absolute top-4 left-4">
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold ${getBadgeColor(
-                product.badge
-              )}`}
-            >
-              {product.badge}
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className="p-6">
-        <h3 className="text-xl font-bold font-inter mb-2 text-white">
-          {product.name}
-        </h3>
-        <p className="text-[var(--platinum)]/70 mb-4 line-clamp-2">
-          {product.description}
-        </p>
-
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl font-bold text-[var(--electric)]">
-            ${parseFloat(product.price).toLocaleString()}
-          </span>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-[var(--platinum)]/60">
-              {product.printWidth ? "Width:" : "Speed:"}
-            </span>
-            <span className="text-sm font-semibold text-white">
-              {product.printWidth || product.printSpeed}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {renderStars(product.rating)}
-            <span className="text-sm text-[var(--platinum)]/60 ml-2">
-              ({product.reviewCount} reviews)
-            </span>
-          </div>
-
-          {isEditable ? (
-            <div className="flex space-x-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit?.(product);
-                }}
-                className="text-blue-500 hover:text-blue-700"
-              >
-                <Pencil className="h-5 w-5" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete?.(product.id);
-                }}
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash className="h-5 w-5" />
-              </button>
-            </div>
-          ) : (
-            <button className="btn-gradient px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2">
-              <Eye className="h-4 w-4" />
-              <span>View Details</span>
-            </button>
-          )}
+    <div className="bg-white rounded shadow p-4 relative max-w-sm">
+      {product.badge && (
+        <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+          {product.badge}
+        </span>
+      )}
+      <img src={product.image} alt={product.name} className="w-full h-48 object-cover rounded" />
+      <h3 className="text-lg font-bold mt-2">{product.name}</h3>
+      <p className="text-sm text-gray-600">{product.description}</p>
+      <div className="mt-2 text-sm text-gray-700">
+        <div>Price: ₹{product.price}</div>
+        <div>Print Width: {product.printWidth}</div>
+        <div>Print Speed: {product.printSpeed}</div>
+        <div>
+          Rating: {product.rating ?? 0} ⭐ ({product.reviewCount ?? 0} reviews)
         </div>
       </div>
+
+      {isEditable && (
+        <div className="flex justify-end mt-4 gap-2">
+          <button onClick={() => onEdit?.(product)} className="text-blue-600 hover:underline">
+            ✏️ Edit
+          </button>
+          <button onClick={() => onDelete?.(product.id)} className="text-red-600 hover:underline">
+            🗑️ Delete
+          </button>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default ProductCard;
